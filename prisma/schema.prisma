@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum StatusTarefa {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  telefone  String?
+  tarefas   Tarefa[]
+  createdAt DateTime @default(now())
+}
+
+model Colaborador {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  cargo     String?
+  tarefas   Tarefa[]
+  createdAt DateTime @default(now())
+}
+
+model Tarefa {
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  descricao   String?
+  status      StatusTarefa @default(PENDENTE)
+  prioridade  String       @default("MEDIA")
+  dataEntrega DateTime?
+
+  clienteId     Int
+  colaboradorId Int
+
+  cliente     Cliente     @relation(fields: [clienteId], references: [id])
+  colaborador Colaborador @relation(fields: [colaboradorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
